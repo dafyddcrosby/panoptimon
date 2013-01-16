@@ -24,6 +24,8 @@ class Monitor
     x = Pathname.new(x)
     x.entries.find_all {|f| f.to_s =~ /\.json$/i}.
       map {|f| x + f}
+  rescue
+    []
   end
 
   def find_collectors; _dirjson(config.collectors_dir); end
