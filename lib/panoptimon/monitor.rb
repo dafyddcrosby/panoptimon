@@ -22,7 +22,8 @@ class Monitor
 
   def _dirjson (x)
     x = Pathname.new(x)
-    x.children.select(&:directory?).map(&:children).flatten.select {|f| f.extname == ".json" }.map(&:realpath)
+    x.entries.find_all {|f| f.to_s =~ /\.json$/i}.
+      map {|f| x + f}
   rescue
     []
   end
@@ -45,7 +46,7 @@ class Monitor
     conf = JSON.parse(file.read, {:symbolize_names => true})
     base = file.basename.sub(/\.json$/, '').to_s
     command = conf[:exec] ||= base
-    command = file.dirname + command unless command =~ /^\//
+    command = file.dirname + base + command unless command =~ /^\//
     return conf.
       merge({
         name: base,
