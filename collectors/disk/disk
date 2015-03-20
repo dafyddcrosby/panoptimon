@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# Copyright (C) 2012-2014 Cisco, Inc.
+# Copyright (C) 2012-2015 Cisco, Inc.
 
 require 'json'
 require 'ostruct'
@@ -14,9 +14,26 @@ def GB b; (b.to_f / 1024**3).round(6); end # GB significant down to 4kB
 
 class Array; def to_h; Hash[self]; end; end
 
+# Skip these filesystems
+FsSkiplist = %w[
+  devpts
+  udev
+  sysfs
+  tmpfs
+  none
+  proc
+  cgroup
+  swap
+  lxproc
+  objfs
+  ctfs
+  lofs
+  iso9660
+  udf
+]
+
 get_mounts = ->() {
-  skip = %w[devpts udev sysfs tmpfs none proc cgroup swap lxproc objfs ctfs lofs
-    ].map {|t| [t,true]}.to_h
+  skip = FsSkiplist.map {|t| [t,true]}.to_h
   Panoptimon::Util.os(
     linux: ->() {
       ->() {
